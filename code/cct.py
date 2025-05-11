@@ -5,6 +5,7 @@ import pymc as pm
 import arviz as az
 import matplotlib.pyplot as plt
 
+# used Claude to help format this cct.py file 
 # loading the data: 
 def load_data(file_path):
     """
@@ -19,10 +20,10 @@ def load_data(file_path):
     """
     try:
         df = pd.read_csv(file_path)
-        # Take informant IDs and remove from dataframe
+        # take informant IDs and remove from dataframe
         informant_ids = df['Informant'].tolist()
         data_df = df.drop(columns=['Informant'])
-        # Convert to numpy array 
+        # convert to numpy array 
         data_array = data_df.values.astype(int)
         return data_array, informant_ids
     except Exception as e:
@@ -46,8 +47,8 @@ def build_cct_model(data):
     
     with pm.Model() as model:
         # prior for competence (D): Beta(2,1) slightly favors higher competence
-        # but still allows for a wide range of values. Bounded to be ≥ 0.5
-        # as per CCT assumptions
+        # but still allows for a wide range of values
+        # bounded to be ≥ 0.5
         D_raw = pm.Beta('D_raw', alpha=2, beta=1, shape=N)
         D = pm.Deterministic('D', 0.5 + 0.5 * D_raw)
         
@@ -55,7 +56,7 @@ def build_cct_model(data):
         Z = pm.Bernoulli('Z', p=0.5, shape=M)
         
         # calculate probabilities for each informant-item pair
-        # meed to reshape D to broadcast correctly
+        # need to reshape D 
         D_reshaped = D[:, None]  # Shape: (N, 1)
         
         # p_ij = Z_j * D_i + (1 - Z_j) * (1 - D_i)
@@ -175,7 +176,7 @@ def visualize_competence(trace, informant_ids=None, save_path=None):
     # plot posterior distributions for each informant
     ax = az.plot_posterior(trace, var_names=["D"], hdi_prob=0.94)
     
-    # if informant IDs are provided, customize the y-axis labels
+    # customize the y-axis labels with provided informant IDs
     if informant_ids and hasattr(ax, 'get_yticklabels'):
         try:
             labels = ax.get_yticklabels()
