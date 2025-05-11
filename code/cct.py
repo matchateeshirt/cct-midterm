@@ -6,6 +6,8 @@ import arviz as az
 import matplotlib.pyplot as plt
 
 # used Claude to help format this cct.py file 
+
+
 # loading the data: 
 def load_data(file_path):
     """
